@@ -17,8 +17,9 @@ export default async function handler(req: any, res: any) {
   // Basic CORS/headers (safe even for same-origin)
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET, HEAD');
+  const reqHeaders = req.headers['access-control-request-headers'];
+  res.setHeader('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization, Accept');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
@@ -26,8 +27,11 @@ export default async function handler(req: any, res: any) {
   if (req.method === 'HEAD') {
     return res.status(200).end();
   }
+  if (req.method === 'GET') {
+    return res.status(200).json({ ok: true });
+  }
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST, OPTIONS, HEAD');
+    res.setHeader('Allow', 'POST, OPTIONS, GET, HEAD');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
