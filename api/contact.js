@@ -39,6 +39,15 @@ module.exports = async (req, res) => {
   }
 
   try {
+    const missingEnv = [];
+    if (!process.env.SMTP_HOST) missingEnv.push('SMTP_HOST');
+    if (!process.env.SMTP_PORT) missingEnv.push('SMTP_PORT');
+    if (!process.env.SMTP_USER) missingEnv.push('SMTP_USER');
+    if (!process.env.SMTP_PASS) missingEnv.push('SMTP_PASS');
+    if (missingEnv.length) {
+      return res.status(500).json({ error: `Server not configured: missing ${missingEnv.join(', ')}` });
+    }
+
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT || 587),
@@ -48,6 +57,14 @@ module.exports = async (req, res) => {
 
     const toEmail = process.env.CONTACT_TO || process.env.SMTP_USER;
     const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@localhost.localdomain';
+
+    // Verify SMTP connection first for clearer errors
+    try {
+      await transporter.verify();
+    } catch (verifyErr) {
+      console.error('SMTP verify failed:', verifyErr);
+      return res.status(500).json({ error: `SMTP verify failed: ${verifyErr?.code || ''} ${verifyErr?.message || 'Unknown error'}`.trim() });
+    }
 
     const info = await transporter.sendMail({
       from: { name: name || 'Portfolio Contact', address: fromAddress },
@@ -68,6 +85,8 @@ module.exports = async (req, res) => {
     return res.status(200).json({ sent: true, messageId: info.messageId });
   } catch (err) {
     console.error('Email send failed:', err);
-    return res.status(500).json({ error: 'Failed to send email' });
+    const code = err?.code || err?.responseCode || '';
+    const msg = err?.message || 'Failed to send email';
+    return res.status(500).json({ error: `${code ? code + ': ' : ''}${msg}` });
   }
 };
