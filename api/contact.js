@@ -1,11 +1,20 @@
 const nodemailer = require('nodemailer');
 
-async function parseBody(req) {
-  if (req.body) return req.body;
-  const chunks = [];
-  for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  const raw = Buffer.concat(chunks).toString('utf8');
-  try { return raw ? JSON.parse(raw) : {}; } catch { return {}; }
+function parseBody(req) {
+  if (req.body) return Promise.resolve(req.body);
+  return new Promise((resolve) => {
+    try {
+      const chunks = [];
+      req.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+      req.on('end', () => {
+        const raw = Buffer.concat(chunks).toString('utf8');
+        try { resolve(raw ? JSON.parse(raw) : {}); } catch { resolve({}); }
+      });
+      req.on('error', () => resolve({}));
+    } catch (_) {
+      resolve({});
+    }
+  });
 }
 
 module.exports = async (req, res) => {
@@ -38,9 +47,10 @@ module.exports = async (req, res) => {
     });
 
     const toEmail = process.env.CONTACT_TO || process.env.SMTP_USER;
+    const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@localhost.localdomain';
 
     const info = await transporter.sendMail({
-      from: { name: name || 'Portfolio Contact', address: process.env.SMTP_FROM || process.env.SMTP_USER || '' },
+      from: { name: name || 'Portfolio Contact', address: fromAddress },
       replyTo: email,
       to: toEmail,
       subject: subject || `New message from ${name}`,
