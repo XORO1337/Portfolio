@@ -1,12 +1,38 @@
 import nodemailer from 'nodemailer';
 
+// Helper to parse JSON body in Vercel serverless (no built-in body parser)
+async function parseBody(req: any): Promise<any> {
+  if (req.body) return req.body; // Some runtimes may populate
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  const raw = Buffer.concat(chunks).toString('utf8');
+  try {
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
 export default async function handler(req: any, res: any) {
+  // Basic CORS/headers (safe even for same-origin)
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  if (req.method === 'HEAD') {
+    return res.status(200).end();
+  }
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'POST, OPTIONS, HEAD');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, subject, message } = req.body || {};
+  const body = await parseBody(req);
+  const { name, email, subject, message } = body || {};
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
