@@ -4,7 +4,7 @@ const HeroSection = () => {
   const handleDownloadCV = () => {
     // Create a dummy CV download - in real implementation, link to actual CV
     const link = document.createElement('a');
-    link.href = 'https://drive.google.com/uc?export=download&id=';
+    link.href = 'https://drive.google.com/uc?export=download&id=1TT96V6lqZ4CGdMr_aN5MHKVsfD4-vI2Y';
     link.download = 'Hardik_Madaan_CV.pdf';
     link.click();
   };
@@ -22,7 +22,7 @@ const HeroSection = () => {
         <div className="max-w-4xl mx-auto">
           {/* Professional Headshot Placeholder */}
           <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center glass border-2 border-primary/30">
-            <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold">
+            
               HM
             </div>
           </div>
