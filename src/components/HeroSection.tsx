@@ -1,4 +1,5 @@
 import { Download, Mail } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 const HeroSection = () => {
   const handleDownloadCV = () => {
@@ -20,11 +21,12 @@ const HeroSection = () => {
     <section id="about" className="section relative overflow-hidden">
       <div className="container mx-auto px-6 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
-          {/* Professional Headshot Placeholder */}
+          {/* Profile Image */}
           <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center glass border-2 border-primary/30">
-            
-              HM
-    
+            <Avatar className="h-28 w-28 shadow-sm">
+              <AvatarImage src="https://media.licdn.com/dms/image/v2/D5603AQGpTmMVtcAXiQ/profile-displayphoto-crop_800_800/B56Zkwa5jxG4AI-/0/1757453983674?e=1768435200&v=beta&t=XLv7V9lSW-Gn3kYpjh6Mv-A6Pkg4COccL7BcteEMwW4" alt="Hardik Madaan" />
+              <AvatarFallback className="text-lg font-semibold">HM</AvatarFallback>
+            </Avatar>
           </div>
 
           {/* Name and Title */}
