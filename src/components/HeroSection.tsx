@@ -4,7 +4,7 @@ const HeroSection = () => {
   const handleDownloadCV = () => {
     // Create a dummy CV download - in real implementation, link to actual CV
     const link = document.createElement('a');
-    link.href = 'https://drive.google.com/uc?export=download&id=1REYMlytyXvldEaOj3HM8OB2kc16LUoh-';
+    link.href = 'https://drive.google.com/uc?export=download&id=';
     link.download = 'Hardik_Madaan_CV.pdf';
     link.click();
   };
@@ -37,7 +37,7 @@ const HeroSection = () => {
           </p>
           
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
-            Creating and Breaking 
+            Creating and securing intelligent web experiences
           </p>
 
           {/* CTA Buttons */}
