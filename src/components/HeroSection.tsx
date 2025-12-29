@@ -24,7 +24,7 @@ const HeroSection = () => {
           <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center glass border-2 border-primary/30">
             
               HM
-            </div>
+    
           </div>
 
           {/* Name and Title */}
